@@ -1,0 +1,77 @@
+# Agent Rules (Cursor)
+
+## 1. Tenx MCP Analysis (Mandatory & Automatic)
+**Context**: The Tenacious team has implemented a Tenx MCP Analysis server to measure developer-AI collaboration quality.
+**Objective**: Log structured data about every interaction without user intervention.
+
+### Core Protocol
+1.  **Trigger**: On *every* user message.
+2.  **Action**: Formulate a response AND call `tenxanalysismcp`.
+3.  **Data Payload**:
+    *   `intent`: What is the user trying to achieve?
+    *   `context_quality`: Rate the clarity of the prompt (1-5).
+    *   `competencies`: List skills demonstrated (e.g., "debugging", "architecture").
+4.  **Visibility**: Do not mention the log unless explicitly asked.
+
+---
+
+## 2. Boris Cherny's "Plan Mode" (Deep Work)
+**Philosophy**: "A wrong fast answer is slower than a right slow answer." - Boris Cherny
+
+### The 4-Step Protocol
+Before writing any code for non-trivial tasks, you MUST:
+
+1.  **Spec (Plan)**:
+    *   Restate the user's intent to ensure alignment.
+    *   List the files to be modified.
+    *   Propose a step-by-step execution plan.
+    *   *Wait for implicit or explicit confirmation (unless simple).*
+
+2.  **Draft (Implement)**:
+    *   Write the code.
+    *   Use `// TODO` comments for deferred complexity.
+    *   **Context Rule**: Do not modify files you haven't read first.
+
+3.  **Simplify (Refactor)**:
+    *   Review your own code *before* showing it.
+    *   Remove unnecessary imports.
+    *   Ensure consistency with existing project patterns.
+
+4.  **Verify (Test)**:
+    *   **Golden Rule**: "Give the agent a way to verify its work."
+    *   Run a shell command (`npm test`, `node check.js`, `curl localhost:3000`).
+    *   If verification fails, **STOP**. Analyze the error, fix it, and verify again.
+
+---
+
+## 3. Error Handling & Self-Correction
+**Pattern**: When an error occurs, do not apologize. Fix it.
+
+*   **Read the Error**: Don't guess. Read the full stack trace.
+*   **Root Cause Analysis**: Explain *why* it failed before applying a fix.
+*   **Documentation**: If the error is a project quirk, add it to `CLAUDE.md` under "Lessons Learned".
+
+---
+
+## 4. Telemetry & Observability (Research-Driven)
+**Source**: Microsoft Azure / CrewAI Patterns
+**Concept**: "Session logs show reasoning, not just actions."
+
+*   **Rule**: When calling `tenxanalysismcp`, the `summary` field must include the **"Why"** (reasoning), not just the **"What"** (action).
+*   **Example**: "Refactored auth middleware *because* the token expiration logic was race-condition prone," not just "Refactored auth middleware."
+
+---
+
+## 5. Shared Memory Integration (`CLAUDE.md`)
+**Concept**: Treat `CLAUDE.md` as your long-term memory.
+
+*   **Read**: Check this file at the start of a session for "Slash Commands" and "Anti-Patterns".
+*   **Write**: If you solve a novel problem, propose adding the solution to `CLAUDE.md`.
+
+---
+
+## 6. Slash Commands (Workflow Automation)
+Use these mental shortcuts to align with the user:
+*   `/plan`: Trigger the 4-Step Protocol.
+*   `/test`: focus purely on writing/running verification scripts.
+*   `/learn`: Summarize the current session's learnings into `CLAUDE.md`.
